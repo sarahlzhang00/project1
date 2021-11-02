@@ -23,8 +23,6 @@ tidy=TRUE, tidy.opts=list(width.cutoff=60), R.options=list(max.print=100))
 
 #### Introduction 
 
-Paragraph or two introducing your datasets and variables, why they are interesting to you, etc.
-
 The two datasets that I chose are gpa_study_hours and satgpa which I obtained from https://vincentarelbundock.github.io/Rdatasets/datasets.html. The gpa_study_hours dataset has 193 rows and 2 variables: gpa and study_hours. The gpa variable represents the grade point average of a college student and the study_hours variable represents the number of hours that student studies per week. The satgpa dataset has 1000 rows and 6 variables: sex, sat_v, sat_m, sat_sum, hs_gpa, and fy_gpa. The sex variable represents the sex of a college student, the sat_v variable represents the verbal SAT percentile of that student, the sat_m variable represents the math SAT percentile of that student, the sat_sum variable represents the total of verbal and math SAT percentiles of that student, the hs_gpa variable represents the high school grade point average of that student, and the fy_gpa variable represents the first year (college) grade point average of that student.
 
 I chose these datasets because I was interested in seeing how the amount study hours a student spends is related to that student's SAT scores. I'm interested in this because I feel that I tend to study a lot and I would like to see if, in general, students who study more tend to have high test scores. Since both datasets have a gpa variable I will be joining them based on the gpa variable from the gpa_study_hours dataset and the fy_gpa variable from the satgpa dataset.
@@ -43,6 +41,8 @@ If your datasets are tidy already, demonstrate that you can reshape data with pi
 
 ```{R}
 # your tidying code (if applicable; can also wait until wrangling section)
+study_hours %>% pivot_wider(names_from="gpa",values_from="study_hours")
+sat %>% pivot_wider(names_from="sex",values_from="sat_sum")
 ```
 
     
