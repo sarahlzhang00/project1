@@ -40,9 +40,14 @@ head(sat)
 If your datasets are tidy already, demonstrate that you can reshape data with pivot wider/longer here (e.g., untidy and then retidy). Alternatively, it may be easier to wait until the wrangling section so you can reshape your summary statistics. Note here if you are going to do this.
 
 ```{R}
-# your tidying code (if applicable; can also wait until wrangling section)
-study_hours %>% pivot_wider(names_from="gpa",values_from="study_hours")
-sat %>% pivot_wider(names_from="sex",values_from="sat_sum")
+study_hours <- study_hours %>% pivot_wider(names_from="gpa",values_from="study_hours")
+sat <- sat %>% pivot_wider(names_from="sex",values_from="sat_sum")
+head(study_hours)
+head(sat)
+study_hours <- study_hours %>% pivot_longer(-1, names_to="gpa",values_to="study_hours", values_drop_na=T)
+sat <- sat %>% pivot_longer(c("1", "2"), names_to="sex",values_to="sat_sum", values_drop_na=T)
+head(study_hours)
+head(sat)
 ```
 
     
