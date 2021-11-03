@@ -89,42 +89,61 @@ There was a total of 193 observations/rows in the study_hours data set and a tot
 
 ```{R}
 # mutate/create column to represent sex as a string
-#mutated_joined <- joined %>% mutate(sex_str = str_replace_all(sex, "[^1]", "Female"), )
-#mutated_joined <- mutated_joined %>% mutate(sex_str = str_replace_all(sex_str, "[^2a-zA-Z]", "Male"))
+mutated_joined <- joined %>% mutate(sex_str = str_replace_all(sex, "[^1]", "Female"), )
+mutated_joined <- mutated_joined %>% mutate(sex_str = str_replace_all(sex_str, "[^2a-zA-Z]", "Male"))
 
 # mutate/create column to rank amount of study_hours (A as high amount of study hours and F as low amount of study hours)
-#mutated_joined <- mutated_joined %>% mutate(study_hours_tier = case_when(
-#                                      study_hours <= 10 ~ "F",
-#                                      study_hours <= 20 ~ "E",
-#                                      study_hours <= 30 ~ "D",
-#                                      study_hours <= 40 ~ "C",
-#                                      study_hours <= 50 ~ "B",
-#                                      TRUE ~ "A",
-#                                      ))
-#head(mutated_joined)
+mutated_joined <- mutated_joined %>% mutate(study_hours_tier = case_when(
+                                      study_hours <= 10 ~ "F",
+                                      study_hours <= 20 ~ "E",
+                                      study_hours <= 30 ~ "D",
+                                      study_hours <= 40 ~ "C",
+                                      study_hours <= 50 ~ "B",
+                                      TRUE ~ "A",
+                                      ))
+head(mutated_joined)
+```
+In the above code chunk, I mutated the joined data set to create two new columns: sex_str and study_hours_tier. The sex_str column is a string representation of the sex so 1 is represented as "Male" and 2 is represented as "Female". I used mutate to create the new column and used str_replace_all and regex to find the correct variables to replace. The study_hours_tiers represents the study_hours as rankings so a high amount of study_hours would be ranked 'A' and a low amount of study_hours would be ranked 'F'. I used mutate to create the column and case_when to create the  variables.
 
+```{R}
 # averages of sat scores and study hours for each gpa group
-gpa_avgs <- joined %>% group_by(gpa) %>% summarize(avg_study_hours = mean(study_hours), avg_sat_sum=mean(sat_sum)) %>% arrange(-avg_study_hours)
+gpa_avgs <- mutated_joined %>% group_by(gpa) %>% summarize(avg_study_hours = mean(study_hours), avg_sat_sum=mean(sat_sum), avg_sat_v=mean(sat_v), avg_sat_m=mean(sat_m)) %>% arrange(-avg_study_hours)
 head(gpa_avgs)
 
-# average sat sum for each study hours ranking and each sex
-study_hours_sat <- mutated_joined %>% group_by(study_hours_tier, sex_str) %>% summarize(avg_sat_sum=mean(sat_sum), occurences=n())
-head(study_hours_sat)
+# average, median, and sd sat sum for each study hours ranking and each sex
+study_hours_sat <- mutated_joined %>% group_by(study_hours_tier, sex_str) %>% summarize(avg_sat_sum=mean(sat_sum), med_sat_sum=median(sat_sum), sd_sat_sum=sd(sat_sum)) %>% knitr::kable(digits = 2, align = 'c', col.names=str_to_title(names(.)))
+study_hours_sat
+```
+In the above code chunk, I first summarized the average study_hours, sat_sum, sat_v,and sat_m for each gpa grouping and then arranged them in descending order based on average study hours. Based on this table, so far, it seems that study_hours and sat scores don't have much of an association. I then summarized the average, median, and standard deviation sat_sum  for each study_hours ranking and for each sex. Based on this table, it also seems that study_hours and sat scores don't have much of an association. However, I did notice that males tend to have higher sat scores compared to females within the same study_hours ranking. I also noticed that there seems to be more variation in sat scores for lower ranking study_hours based on the sd_sat_sum column. Additionally, I applied kable to the second table to style it. 
 
-# number of occurrnece of each sex and of each study hours ranking
+```{R}
+# number of occurrence of each sex and of each study hours ranking
 sex_occ <- mutated_joined %>% group_by(sex_str) %>% summarize(occurences=n())
 head(sex_occ)
 study_hours_tier_occ <- mutated_joined %>% group_by(study_hours_tier) %>% summarize(occurences=n())
 head(study_hours_tier_occ)
 
-# filter out females and select gpa that matched mine to compare study hours
-my_sex_gpa <- mutated_joined %>% filter(sex_str=="Female" & gpa>=3.85 & gpa <=3.90) %>% select(study_hours)
-head(my_sex_gpa)
-# TODO: create function, median, sd, gt/kable
+# number of NAs for each variable
+joined %>% summarise_all(funs(sum(is.na(.))))
 ```
+In the above code chunk, I summarized the frequencies of each level for the categorical variables (sex and study_hours_tier). I found that there are 261 Females and and 207 Males. Based on the study_hours rankings and their occurrences, there are 4 observations that study more than 50 hours per week, 2 observations that study 40-50 hours per week, 22 observations that study 30-40 hours per week, 71 observations that study 20-30 hours per week, 173 observations that study 10-20 hours per week, and 196 observations that study less than 10 hours per week. There were no NAs in any of the variables which makes sense since we performed an inner join before.
 
-Your discussion of wrangling section here. Feel encouraged to break up into more than once code chunk and discuss each in turn.
+```{R}
+# filter out females and select gpa that matched mine to compare study hours
+my_sex_gpa <- mutated_joined %>% filter(sex_str=="Female" & gpa>=3.85 & gpa <=3.90) %>% select(study_hours, sat_sum)
+head(my_sex_gpa)
+```
+In the above code chunk, I filtered out the females and the GPAs that closely matched mine and then selected the amount of study_hours they had. It was interesting to see that the study_hours varied quite a bit from each observation but the sat_sum was pretty similar with each other. I'd say that the amount of study_hours that I spend fall in the middle of these observations (around 14 hours per week). 
 
+```{R}
+# defined own function that calculates difference between verbal sat scores and math sat scores
+my_function <- function(sat_v, sat_m) {
+  sat_v - sat_m
+}
+sat_diff <- gpa_avgs %>% group_by(avg_study_hours) %>% summarize(avg_sat_diff=mean(my_function(avg_sat_v, avg_sat_m)))
+head(sat_diff)
+```
+In the above code chunk, I created my own function to summarize with. The function I wrote calculates the difference between the verbal sat percentile and the math sat percentile. I summarized with this function to calculate the average verbal and math sat difference for each average amount of study_hours. From this table, it seems like the amount of study hours does not affect how well a student does on the verbal sat vs the math sat. I did notice that on average, students perform worse on the verbal sat compared to the math sat since most of the average differences are negative.
 
 #### Visualizing
 
