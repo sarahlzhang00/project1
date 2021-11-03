@@ -23,9 +23,9 @@ tidy=TRUE, tidy.opts=list(width.cutoff=60), R.options=list(max.print=100))
 
 #### Introduction 
 
-The two datasets that I chose are gpa_study_hours and satgpa which I obtained from https://vincentarelbundock.github.io/Rdatasets/datasets.html. The gpa_study_hours data set has 193 rows and 2 variables: gpa and study_hours. The gpa variable represents the grade point average of a college student and the study_hours variable represents the number of hours that student studies per week. The satgpa data set has 1000 rows and 6 variables: sex, sat_v, sat_m, sat_sum, hs_gpa, and fy_gpa. The sex variable represents the sex of a college student, the sat_v variable represents the verbal SAT percentile of that student, the sat_m variable represents the math SAT percentile of that student, the sat_sum variable represents the total of verbal and math SAT percentiles of that student, the hs_gpa variable represents the high school grade point average of that student, and the fy_gpa variable represents the first year (college) grade point average of that student.
+The two datasets that I chose are gpa_study_hours and satgpa which I obtained from https://vincentarelbundock.github.io/Rdatasets/datasets.html. The gpa_study_hours data set has 193 rows and 2 variables: gpa and study_hours. The gpa variable represents the grade point average of a college student and the study_hours variable represents the number of hours that student studies per week. The satgpa data set has 1000 rows and 6 variables: sex, sat_v, sat_m, sat_sum, hs_gpa, and fy_gpa. The sex variable represents the sex of a college student, the sat_v variable represents the verbal SAT percentile of that student, the sat_m variable represents the math SAT percentile of that student, the sat_sum variable represents the total of verbal and math SAT percentiles of that student, the hs_gpa variable represents the high school grade point average of that student, and the fy_gpa variable represents the first year (college) grade point average of that student. The data for the gpa_study_hours data set was collected through an anonymous survey from an introductory statistics course at a private US university. The data for the satgpa data set was collected through an educational testing service at an unnamed college. 
 
-I chose these data sets because I was interested in seeing how the amount study hours a student spends is related to that student's SAT scores. I'm interested in this because I feel that I tend to study a lot and I would like to see if, in general, students who study more tend to have high test scores. Since both data sets have a gpa variable I will be joining them based on the gpa variable from the gpa_study_hours dataset and the fy_gpa variable from the satgpa data set.
+I chose these data sets because I was interested in seeing how the amount study hours a student spends is related to that student's SAT scores. I'm interested in this because I feel that I tend to study a lot and I would like to see if, in general, students who study more tend to have high test scores. Since both data sets have a gpa variable I will be joining them based on the gpa variable from the gpa_study_hours dataset and the fy_gpa variable from the satgpa data set. One association that I predict will occur is that students who study more often will have higher SAT scores. 
 
 ```{R}
 library(tidyverse)
@@ -37,7 +37,7 @@ head(sat)
 
 #### Tidying: Reshaping
 
-If your datasets are tidy already, demonstrate that you can reshape data with pivot wider/longer here (e.g., untidy and then retidy). Alternatively, it may be easier to wait until the wrangling section so you can reshape your summary statistics. Note here if you are going to do this.
+The data sets are tidy already so this is just to demonstrate that I can reshape the data. First, I pivoted wider on the study_hours data set by using the gpas as the columns and the study_hours as the values. I also pivoted wider on the sat data set by using the sex as the columns and the sat_sum as the values. Then, I pivoted back longer on the study_hours data set by reverting the gpas and study_hours as their own separate columns and removed the NAs. I also pivoted back longer on the sat data set by reverting the sex and sat_sum as their own separate columns and removed the NAs.
 
 ```{R}
 # pivot wider
@@ -80,18 +80,47 @@ nrow(study_hours) - nrow(distinct(joined, X1.x))
 nrow(sat) - nrow(distinct(joined, X1.y))
 study_hours %>% anti_join(sat, by=c("gpa"="fy_gpa"))
 sat %>% anti_join(study_hours, by=c("fy_gpa"="gpa"))
+nrow(joined)
 ```
 
-There was a total of 193 observations/rows in the study_hours data set and a total of 1000 observations/rows in the sat data set. There is a total of 63 distinct gpas (IDs) in the study_hours data set and a total of 282 distinct fy_gpas (IDs) in the sat data set. 42 gpas (IDs) in the study_hours data set did not appear in the sat data set and 871 fy_gpas (IDs) in the sat data set do not appear in the study_hours data set. 42 observations from the study_hours data set were dropped and 871 observations from the sat dataset were dropped when the inner join was performed.
+There was a total of 193 observations/rows in the study_hours data set and a total of 1000 observations/rows in the sat data set. There is a total of 63 distinct gpas (IDs) in the study_hours data set and a total of 282 distinct fy_gpas (IDs) in the sat data set. 42 gpas (IDs) in the study_hours data set do not appear in the sat data set and 871 fy_gpas (IDs) in the sat data set do not appear in the study_hours data set which are all shown in the anti joined data set above. 42 observations from the study_hours data set were dropped and 871 observations from the sat data set were dropped when the inner join was performed. The problem with this is that there is now less data (less gpas) to look at which might not allow our analysis to be as accurate. There is a total of 468 common gpas (IDs) in the joined data set (that appear in both the study_hours and sat data sets). The size of the joined data set is a lot larger that the study_hours data set probably because there were multiple observations in the sat data set for a gpa. The size of the joined data set is a lot smaller than the sat data set probably because a lot of the data had to be dropped since there wasn't a matching gpa in the study_hours data set.
 
 ####  Wrangling
 
 ```{R}
-# your wrangling code
+# mutate/create column to represent sex as a string
+#mutated_joined <- joined %>% mutate(sex_str = str_replace_all(sex, "[^1]", "Female"), )
+#mutated_joined <- mutated_joined %>% mutate(sex_str = str_replace_all(sex_str, "[^2a-zA-Z]", "Male"))
 
-# your wrangling code
+# mutate/create column to rank amount of study_hours (A as high amount of study hours and F as low amount of study hours)
+#mutated_joined <- mutated_joined %>% mutate(study_hours_tier = case_when(
+#                                      study_hours <= 10 ~ "F",
+#                                      study_hours <= 20 ~ "E",
+#                                      study_hours <= 30 ~ "D",
+#                                      study_hours <= 40 ~ "C",
+#                                      study_hours <= 50 ~ "B",
+#                                      TRUE ~ "A",
+#                                      ))
+#head(mutated_joined)
 
-# your wrangling code
+# averages of sat scores and study hours for each gpa group
+gpa_avgs <- joined %>% group_by(gpa) %>% summarize(avg_study_hours = mean(study_hours), avg_sat_sum=mean(sat_sum)) %>% arrange(-avg_study_hours)
+head(gpa_avgs)
+
+# average sat sum for each study hours ranking and each sex
+study_hours_sat <- mutated_joined %>% group_by(study_hours_tier, sex_str) %>% summarize(avg_sat_sum=mean(sat_sum), occurences=n())
+head(study_hours_sat)
+
+# number of occurrnece of each sex and of each study hours ranking
+sex_occ <- mutated_joined %>% group_by(sex_str) %>% summarize(occurences=n())
+head(sex_occ)
+study_hours_tier_occ <- mutated_joined %>% group_by(study_hours_tier) %>% summarize(occurences=n())
+head(study_hours_tier_occ)
+
+# filter out females and select gpa that matched mine to compare study hours
+my_sex_gpa <- mutated_joined %>% filter(sex_str=="Female" & gpa>=3.85 & gpa <=3.90) %>% select(study_hours)
+head(my_sex_gpa)
+# TODO: create function, median, sd, gt/kable
 ```
 
 Your discussion of wrangling section here. Feel encouraged to break up into more than once code chunk and discuss each in turn.
