@@ -1629,16 +1629,7 @@ head(study_hours)</code></pre>
 </div>
 <div id="joiningmerging" class="section level4">
 <h4>Joining/Merging</h4>
-<pre class="r"><code># study_hours &lt;- study_hours %&gt;% group_by(gpa) %&gt;%
-# summarise(avg_study_hours=mean(study_hours))
-# head(study_hours)
-
-# sat &lt;- sat %&gt;% group_by(fy_gpa, sex) %&gt;%
-# summarise(avg_sat_v=mean(sat_v), avg_sat_m=mean(sat_m),
-# avg_sat_sum=mean(sat_sum), avg_hs_gpa=mean(hs_gpa))
-# head(sat)
-
-study_hours$gpa &lt;- as.double(study_hours$gpa)
+<pre class="r"><code>study_hours$gpa &lt;- as.double(study_hours$gpa)
 
 joined &lt;- study_hours %&gt;% inner_join(sat, by = c(gpa = &quot;fy_gpa&quot;))
 head(joined)</code></pre>
