@@ -57,12 +57,6 @@ head(sat)
 #### Joining/Merging
 
 ```{R}
-#study_hours <- study_hours %>% group_by(gpa) %>% summarise(avg_study_hours=mean(study_hours))
-#head(study_hours)
-
-#sat <- sat %>% group_by(fy_gpa, sex) %>% summarise(avg_sat_v=mean(sat_v), avg_sat_m=mean(sat_m), avg_sat_sum=mean(sat_sum), avg_hs_gpa=mean(hs_gpa))
-#head(sat)
-
 study_hours$gpa <- as.double(study_hours$gpa) 
 
 joined <- study_hours %>% inner_join(sat, by=c("gpa"="fy_gpa"))
