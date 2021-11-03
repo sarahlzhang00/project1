@@ -161,9 +161,14 @@ mutated_joined %>% ggplot(aes(x=sex_str, y=sat_sum, color=sex_str)) + geom_error
 
 In the above plot, I created an errorbar plot that represents the variability and average SAT percentile for each sex. I also added a point to represent the average (mean) for each sex. Based on this plot, the average SAT percentile for males is higher than the average SAT percentile for females since the errorbar is higher. This might indicate that males generally have higher SAT scores/percentiles compared to females. Additionally, the error bars are very short which indicates that there is not much variability of the data within each sex so the data is reliable.
 
+```{R}
+joined %>% ggplot(aes(x=study_hours, y=gpa, color=sex)) + geom_point(size = 4, alpha = .5) + geom_smooth(method="lm") + scale_x_continuous(breaks=seq(0,60,5)) + scale_y_continuous(breaks=seq(0,4,.25)) + ggtitle("Study Hours per Week vs GPA") + ylab("GPA") + xlab("Study Hours per Week") + theme_minimal()
+```
+The above scatter plot with a line of best fit compares GPA with study hours. There does seem to be a small positive relationship between them so as study hours increases, so does the GPA. Here, it also seems like Male gpa is just slightly higher than that of females. 
+
 #### Concluding Remarks
 
-In conclusion, my initial hypothesis was mistaken. There seems to be no relationship between the amount of time spent studying and SAT scores/percentiles.  
+In conclusion, my initial hypothesis was mistaken. There seems to be no relationship between the amount of time spent studying and SAT scores/percentiles. Even if the time spent studying was increased or decreased, there was no positive or negative effect on the SAT scores/percentiles. However, there does seem to be a positive relationship between GPA and Study Hours. Additionally, Male SAT scores seem to be generally higher than that of females. Other observations were also made through wrangling and visualizing data listed above.
 
 
 
