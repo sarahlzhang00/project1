@@ -111,8 +111,10 @@ gpa_avgs <- mutated_joined %>% group_by(gpa) %>% summarize(avg_study_hours = mea
 head(gpa_avgs)
 
 # average, median, and sd sat sum for each study hours ranking and each sex
-study_hours_sat <- mutated_joined %>% group_by(study_hours_tier, sex_str) %>% summarize(avg_sat_sum=mean(sat_sum), med_sat_sum=median(sat_sum), sd_sat_sum=sd(sat_sum)) %>% knitr::kable(digits = 2, align = 'c', col.names=str_to_title(names(.)))
-study_hours_sat
+study_hours_sat <- mutated_joined %>% group_by(study_hours_tier, sex_str) %>% summarize(avg_sat_sum=mean(sat_sum), med_sat_sum=median(sat_sum), sd_sat_sum=sd(sat_sum))
+study_hours_sat_kabled <- study_hours_sat %>% knitr::kable(digits = 2, align = 'c', col.names=str_to_title(names(.)))
+head(study_hours_sat)
+head(study_hours_sat_kabled)
 ```
 In the above code chunk, I first summarized the average study_hours, sat_sum, sat_v,and sat_m for each gpa grouping and then arranged them in descending order based on average study hours. Based on this table, so far, it seems that study_hours and sat scores don't have much of an association. I then summarized the average, median, and standard deviation sat_sum  for each study_hours ranking and for each sex. Based on this table, it also seems that study_hours and sat scores don't have much of an association. However, I did notice that males tend to have higher sat scores compared to females within the same study_hours ranking. I also noticed that there seems to be more variation in sat scores for lower ranking study_hours based on the sd_sat_sum column. Additionally, I applied kable to the second table to style it. 
 
@@ -148,22 +150,22 @@ In the above code chunk, I created my own function to summarize with. The functi
 #### Visualizing
 
 ```{R}
-# your plot 1
+joined %>% ggplot(aes(x=study_hours, y=sat_sum, color=sex)) + geom_point(size = 4, alpha = .5) + geom_smooth(method="lm") + scale_x_continuous(breaks=seq(0,60,5)) + scale_y_continuous(breaks=seq(50,150,5)) + ggtitle("Study Hours per Week vs Total SAT Percentile") + ylab("Total SAT Percentile") + xlab("Study Hours per Week") + theme_minimal()
 ```
 
-Your discussion of plot 1
+In the above plot, I created a scatter plot using geom_point() and a line of best fit using geom_smooth() to compare the amount of study hours per week vs the total of verbal and math SAT percentiles. I also colored the points and line to be separated by sex. Based on this plot, there doesn't seem to be a relationship between the amount of study hours and SAT scores/percentiles since both lines look pretty horizontal and the points are randomly scattered for each sex. I did notice  that the line that represents males is higher than the line that represents females which might indicate that males usually have higher SAT scores/percentiles compared to females regardless of amount of time spent studying.
 
 ```{R}
-# your plot 2
+mutated_joined %>% ggplot(aes(x=study_hours_tier, y=sat_sum, fill=study_hours_tier)) + geom_bar(stat="summary", alpha=0.5, fun=mean) + geom_errorbar(stat="summary", width=0.5) + scale_y_continuous(breaks=seq(0, 130, 10)) + ggtitle("Study Hours Ranking vs Average Total Sat Percentile") + ylab("Average Total Sat Percentile") + xlab("Study Hours Ranking") + theme(legend.position="none")
 ```
 
-Your discussion of plot 2
+In the above plot, I created a bar plot representing the average SAT percentile for each study_hours ranking. I also added error bars for each ranking. Based on this plot, the average SAT percentile is pretty similar among each study  hours ranking which further shows that SAT  score is probably not related to the amount of study hours a student spends. Additionally, the error bars for each of the rankings are all pretty short which indicates that there is less variability in the data so it's pretty reliable.
 
 ```{R}
-# your plot 3
+mutated_joined %>% ggplot(aes(x=sex_str, y=sat_sum, fill=sex_str)) + geom_bar(stat="summary", alpha=0.75, fun=mean) + geom_errorbar(stat="summary", width=0.5) + geom_point(stat="summary", fun=mean, color="red", size=4) + scale_y_continuous(breaks=seq(0, 130, 10)) + ggtitle("Sex vs Average Total Sat Percentile") + ylab("Average Total Sat Percentile") + xlab("Sex") + theme(legend.position="none")
 ```
 
-Your discussion of plot 3
+In the above plot, I created a bar plot that represents the average SAT percentile for each sex. I also added error bars and a point to represent the average for each sex. Based on this plot, the average SAT percentile for males is higher than the average SAT percentile for females since the bar is higher. This might indicate that males generally have higher SAT scores/percentiles compared to females. Additionally, the error bars are very short which indicates that there is not much variability of the data within each sex so the data is reliable.
 
 #### Concluding Remarks
 
